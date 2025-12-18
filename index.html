@@ -1,23 +1,461 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Alertes & Tâches</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil | Centre d'Aide Scolaire</title>
+    
+    <style>
+        :root {
+            --couleur-primaire: #007bff;
+            --couleur-secondaire: #28a745;
+            --couleur-fond: #f8f9fa;
+            --couleur-texte: #343a40;
+            --couleur-bordure: #ced4da;
+            --couleur-avertissement: #ffc107;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: var(--couleur-fond);
+            color: var(--couleur-texte);
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--couleur-bordure);
+        }
+        h1 {
+            color: var(--couleur-primaire);
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+        header p {
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+        h2 {
+            color: var(--couleur-secondaire);
+            border-left: 4px solid var(--couleur-secondaire);
+            padding-left: 10px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+        #recherche {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+        input[type="text"] {
+            padding: 12px 15px;
+            width: 100%;
+            max-width: 500px;
+            border: 2px solid var(--couleur-bordure);
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: var(--couleur-primaire);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+        button {
+            padding: 12px 20px;
+            background-color: var(--couleur-primaire);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        /* Style spécifique pour le bouton Sauvegarder/Charger */
+        .progression-boutons button {
+            background-color: var(--couleur-avertissement);
+            margin: 5px;
+        }
+        .progression-boutons button:hover {
+            background-color: #d39e00;
+        }
+        /* Liste des ressources */
+        #listeRessources {
+            list-style: none;
+            padding: 0;
+        }
+        #listeRessources li {
+            margin-bottom: 12px;
+            padding: 15px;
+            background-color: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            position: relative; /* Pour le badge de statut */
+        }
+        #listeRessources li:hover {
+            background-color: #e9f5ff;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+        }
+        #listeRessources a {
+            text-decoration: none;
+            color: var(--couleur-secondaire);
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: color 0.2s;
+        }
+        #listeRessources a:hover {
+            color: var(--couleur-primaire);
+            text-decoration: underline;
+        }
+        /* Badge de statut de révision */
+        .statut-revision {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 3px 8px;
+            font-size: 0.8em;
+            color: white;
+            background-color: #dc3545; /* Rouge pour révision due */
+            border-radius: 4px;
+        }
+        .progression-code textarea {
+            width: 100%;
+            height: 80px;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid var(--couleur-bordure);
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        #message-aucun-resultat {
+            text-align: center;
+            color: #dc3545;
+            font-weight: bold;
+            margin-top: 20px;
+            display: none;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+            margin: 30px 0;
+        }
+    </style>
 </head>
 <body>
 
-  <h1>Gestion des alertes</h1>
+    <div class="container">
+        <header>
+            <h1>📚 Centre d'Aide Scolaire</h1>
+            <p>Trouvez rapidement les outils et ressources dont vous avez besoin.</p>
+        </header>
 
-  <form id="alertForm">
-    <input type="text" id="task" placeholder="Tâche associée" required>
-    <input type="number" id="delay" placeholder="Temps (en minutes)" required>
-    <button type="submit">Créer l’alerte</button>
-  </form>
+        <div class="progression">
+            <h2>💾 Suivi de Progression</h2>
+            <div class="progression-boutons">
+                <button onclick="sauvegarderProgression()">Sauvegarder Progression (Générer Code)</button>
+                <button onclick="chargerProgressionBouton()">Charger Progression</button>
+            </div>
+            <div class="progression-code">
+                <textarea id="codeSauvegarde" placeholder="Le code de sauvegarde apparaîtra ici ou collez votre code pour charger."></textarea>
+            </div>
+        </div>
 
-  <h2>Alertes actives</h2>
-  <ul id="alertList"></ul>
+        <hr>
+        
+        <div id="recherche">
+            <h2>🔎 Rechercher un outil d'aide</h2>
+            <input type="text" id="barreRecherche" onkeyup="filtrerRessources()" placeholder="Ex: Maths, Conjugaison, Python..." aria-label="Barre de recherche">
+            <button onclick="filtrerRessources()">Rechercher</button>
+        </div>
 
-  <script src="script.js"></script>
+        <hr>
+
+        <div class="ressources">
+            <h2>🛠️ Outils et Ressources Populaires</h2>
+            <ul id="listeRessources">
+                </ul>
+            <p id="message-aucun-resultat">Aucune ressource trouvée pour votre recherche. Veuillez essayer d'autres mots-clés.</p>
+            <p>Cliquez sur le nom pour accéder à l'outil. Les leçons consultées afficheront leur statut de révision.</p>
+        </div>
+    </div>
+    
+    <script src="data.js"></script>
+
+    <script>
+        // La progression est stockée ici. Clé = ressource.lien, Valeur = { consultDate: "...", schedule: [...] }
+        let progressionUtilisateur = {}; 
+
+        // ----------------------------------------------------
+        // LOGIQUE DE DATE ET RÉVISION
+        // ----------------------------------------------------
+
+        // Chronologie de révision en jours
+        const INTERVALLES_REVISION = [3, 7, 30, 90, 365, 730]; // 3j, 1 sem, 1 mois, 3 mois, 1 an, 2 ans
+        const MILLISECONDS_IN_DAY = 1000 * 60 * 60 * 24;
+
+        /**
+         * Calcule le calendrier de révision à partir de la date de consultation.
+         * @param {Date} dateConsultation 
+         * @returns {string[]} Un tableau de dates de révision au format ISO (YYYY-MM-DD).
+         */
+        function calculerCalendrierRevision(dateConsultation) {
+            const calendrier = [];
+            
+            // Les intervalles de 30, 90, 365, etc. sont approximatifs pour un système simple
+            // on ajoute simplement des jours car c'est plus simple que de gérer setMonth/setFullYear
+            const baseTimestamp = dateConsultation.getTime();
+            
+            for (const jours of INTERVALLES_REVISION) {
+                const dateRevision = new Date(baseTimestamp + jours * MILLISECONDS_IN_DAY);
+                // Utiliser toISOString().substring(0, 10) pour un format YYYY-MM-DD simple et universel
+                calendrier.push(dateRevision.toISOString().substring(0, 10));
+            }
+            return calendrier;
+        }
+
+        // ----------------------------------------------------
+        // LOGIQUE DE SAUVEGARDE ET CHARGEMENT
+        // ----------------------------------------------------
+
+        /**
+         * Enregistre la consultation d'une leçon et met à jour le calendrier de révision.
+         * N'est appelé que si la ressource est de type 'lecon'.
+         * @param {string} lien Lien unique de la ressource consultée
+         */
+        function trackConsultation(lien, type) {
+            if (type !== 'lecon') return; 
+            
+            const dateConsultation = new Date();
+            const calendrier = calculerCalendrierRevision(dateConsultation);
+            
+            progressionUtilisateur[lien] = {
+                consultDate: dateConsultation.toISOString().substring(0, 10), // Date de consultation
+                schedule: calendrier // Calendrier des révisions futures
+            };
+            
+            // Mettre à jour la liste affichée pour montrer le statut de révision
+            genererListeHTML(); 
+            console.log("Consultation enregistrée et calendrier mis à jour pour : " + lien);
+        }
+
+        /**
+         * Génère un code de sauvegarde compact (JSON + Base64).
+         */
+        function sauvegarderProgression() {
+            try {
+                const jsonString = JSON.stringify(progressionUtilisateur);
+                // Encodage Base64 pour un code compact et sûr
+                const code = btoa(jsonString);
+                document.getElementById('codeSauvegarde').value = code;
+                alert("Progression sauvegardée ! Copiez le code ci-dessous.");
+            } catch (e) {
+                alert("Erreur lors de la sauvegarde : " + e.message);
+            }
+        }
+
+        /**
+         * Charge la progression à partir d'un code.
+         * @param {string} code Le code Base64 de sauvegarde.
+         */
+        function chargerProgression(code) {
+            if (!code) return false;
+            try {
+                // Décodage Base64
+                const jsonString = atob(code);
+                const data = JSON.parse(jsonString);
+                
+                progressionUtilisateur = data;
+                genererListeHTML(); // Regénérer la liste pour afficher la progression
+                alert("Progression chargée avec succès !");
+                return true;
+            } catch (e) {
+                alert("Erreur lors du chargement du code. Veuillez vérifier le format.");
+                return false;
+            }
+        }
+
+        /**
+         * Lance le chargement à partir du bouton (récupère le code du textarea).
+         */
+        function chargerProgressionBouton() {
+            const code = document.getElementById('codeSauvegarde').value.trim();
+            chargerProgression(code);
+        }
+
+        // ----------------------------------------------------
+        // LOGIQUE D'AFFICHAGE (Mise à jour pour le suivi)
+        // ----------------------------------------------------
+
+        /**
+         * Génère les éléments <li> à partir de data.js et de la progression.
+         */
+        function genererListeHTML() {
+            const ul = document.getElementById('listeRessources');
+            ul.innerHTML = ''; 
+
+            const today = new Date().toISOString().substring(0, 10);
+            
+            ressourcesScolaires.forEach(ressource => {
+                const li = document.createElement('li');
+                
+                // Mots-clés pour la recherche
+                li.setAttribute('data-nom', ressource.nom);
+                li.setAttribute('data-motscles', ressource.motsCles);
+                li.setAttribute('data-description', ressource.description);
+
+                // Crée le lien et ajoute le suivi de clic
+                const a = document.createElement('a');
+                a.href = ressource.lien;
+                a.target = "_blank";
+                a.textContent = ressource.nom;
+                
+                // Le suivi se fait à l'aide d'un listener pour ne pas bloquer la navigation
+                a.addEventListener('click', () => {
+                    trackConsultation(ressource.lien, ressource.type);
+                });
+
+                li.appendChild(a);
+                li.appendChild(document.createTextNode(` - ${ressource.description}`));
+
+                // Gérer l'affichage du statut de révision (uniquement pour les leçons suivies)
+                if (ressource.type === 'lecon' && progressionUtilisateur[ressource.lien]) {
+                    const progression = progressionUtilisateur[ressource.lien];
+                    let statutHtml = '';
+                    
+                    // Trouver la prochaine révision due (ou la plus éloignée)
+                    const prochaineRevision = progression.schedule.find(date => date >= today);
+                    
+                    if (!prochaineRevision) {
+                        statutHtml = '<span class="statut-revision" style="background-color:#28a745;">✅ Révisions terminées</span>';
+                    } else if (prochaineRevision === today) {
+                        statutHtml = '<span class="statut-revision">🔴 Révision DUE AUJOURD\'HUI</span>';
+                    } else if (prochaineRevision < today) {
+                        statutHtml = '<span class="statut-revision">🔴 Révision en retard</span>';
+                    } else {
+                        statutHtml = `<span class="statut-revision" style="background-color:#007bff;">Prochaine révision : ${prochaineRevision}</span>`;
+                    }
+
+                    li.innerHTML += statutHtml;
+                }
+                
+                ul.appendChild(li);
+            });
+            // Filtrer la liste après l'avoir générée
+            filtrerRessources(); 
+        }
+
+        // ----------------------------------------------------
+        // LOGIQUE DE RECHERCHE (Adaptée pour utiliser les attributs data-*)
+        // ----------------------------------------------------
+
+        /**
+         * Fonction utilitaire : Calcul de la distance de Levenshtein
+         */
+        function distanceLevenshtein(a, b) {
+            // (La fonction Levenshtein est conservée ici pour la concision)
+            if (a.length === 0) return b.length;
+            if (b.length === 0) return a.length;
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) {
+                matrix[i] = [i];
+            }
+            for (let j = 0; j <= a.length; j++) {
+                matrix[0][j] = j;
+            }
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j] + 1);
+                    }
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        /**
+         * Fonction principale de filtrage avec Levenshtein et mots-clés.
+         */
+        function filtrerRessources() {
+            const input = document.getElementById('barreRecherche');
+            const rechercheMots = input.value.trim().toUpperCase().split(/\s+/).filter(mot => mot.length > 0);
+            
+            const liElements = document.querySelectorAll('#listeRessources li');
+            const MAX_ERREURS = 3;
+            let resultatsTrouves = 0;
+
+            liElements.forEach(liElement => {
+                if (rechercheMots.length === 0) {
+                    liElement.style.display = "";
+                    resultatsTrouves++;
+                    return;
+                }
+                
+                // Contenu total pour la recherche
+                const contenuRecherche = (
+                    liElement.getAttribute('data-nom') + " " +
+                    liElement.getAttribute('data-description') + " " +
+                    liElement.getAttribute('data-motscles')
+                ).toUpperCase();
+                
+                const contenuMots = contenuRecherche.split(/[\s,]+/).filter(mot => mot.length > 0);
+                let tousMotsCorrespondent = true;
+
+                for (const motRecherche of rechercheMots) {
+                    let motTrouve = false;
+                    for (const motContenu of contenuMots) {
+                        if (distanceLevenshtein(motRecherche, motContenu) <= MAX_ERREURS) {
+                            motTrouve = true;
+                            break;
+                        }
+                    }
+                    if (!motTrouve) {
+                        tousMotsCorrespondent = false;
+                        break; 
+                    }
+                }
+
+                if (tousMotsCorrespondent) {
+                    liElement.style.display = "";
+                    resultatsTrouves++;
+                } else {
+                    liElement.style.display = "none";
+                }
+            });
+
+            const messageAucunResultat = document.getElementById('message-aucun-resultat');
+            if (resultatsTrouves === 0 && rechercheMots.length > 0) {
+                messageAucunResultat.style.display = "block";
+            } else {
+                messageAucunResultat.style.display = "none";
+            }
+        }
+
+        // Lancer la génération de la liste au chargement de la page
+        document.addEventListener('DOMContentLoaded', genererListeHTML);
+    </script>
+
 </body>
 </html>
