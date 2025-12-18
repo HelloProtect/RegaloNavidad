@@ -3,54 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Liste de Noël</title>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; background: #fdf2f2; display: flex; flex-direction: column; align-items: center; padding: 40px; }
-    h1 { color: #b71c1c; margin-bottom: 30px; }
-    .container { width: 100%; max-width: 400px; }
-    ul { list-style: none; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #fdf2f2; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+    .container { width: 100%; max-width: 450px; }
+    h1 { color: #b71c1c; text-align: center; }
     
+    .category-title { 
+      color: #2e7d32; 
+      font-size: 1.2rem; 
+      margin: 20px 0 10px 5px; 
+      display: flex; align-items: center; gap: 8px;
+    }
+    
+    ul { list-style: none; padding: 0; }
     li { 
-      background: white; 
-      margin-bottom: 12px; 
-      border-radius: 12px; 
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-      transition: transform 0.2s;
+      background: white; margin-bottom: 8px; border-radius: 10px; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: 0.2s;
     }
-    li:hover { transform: translateY(-3px); }
-
+    li:hover { transform: scale(1.02); }
+    
     a { 
-      display: block; 
-      padding: 18px; 
-      text-decoration: none; 
-      color: #2d3436; 
-      font-weight: 600; 
-      display: flex;
-      justify-content: space-between;
+      display: flex; justify-content: space-between; padding: 15px;
+      text-decoration: none; color: #333; font-weight: 500;
     }
-    a::after { content: '🎁'; }
+    .price { color: #b71c1c; font-size: 0.9rem; }
   </style>
 </head>
 <body>
   <h1>🎄 Ma Liste de Noël</h1>
-  <div class="container">
-    <ul id="giftList"></ul>
-  </div>
+  <div id="main-container" class="container"></div>
 
   <script>
-    const gifts = [
-      { name: "Casque audio", link: "#" },
-      { name: "Jeu vidéo", link: "#" },
-      { name: "Sweat", link: "#" },
-      { name: "Carte cadeau", link: "#" },
-      { name: "Livre", link: "#" }
+    const data = [
+      {
+        category: "High-Tech", icon: "🎧",
+        items: [
+          { name: "Casque Bluetooth", link: "#", price: "150€" },
+          { name: "Souris Gamer", link: "#", price: "50€" }
+        ]
+      },
+      {
+        category: "Loisirs", icon: "📚",
+        items: [
+          { name: "Livre Science-Fiction", link: "#", price: "20€" },
+          { name: "Jeu de plateau", link: "#", price: "35€" }
+        ]
+      }
     ];
 
-    const giftList = document.getElementById('giftList');
-    gifts.forEach(gift => {
-      const li = document.createElement('li');
-      li.innerHTML = `<a href="${gift.link}" target="_blank">${gift.name}</a>`;
-      giftList.appendChild(li);
+    const container = document.getElementById('main-container');
+
+    data.forEach(group => {
+      const section = document.createElement('div');
+      section.innerHTML = `
+        <div class="category-title"><span>${group.icon}</span> ${group.category}</div>
+        <ul>
+          ${group.items.map(item => `
+            <li>
+              <a href="${item.link}" target="_blank">
+                ${item.name} <span class="price">${item.price}</span>
+              </a>
+            </li>
+          `).join('')}
+        </ul>
+      `;
+      container.appendChild(section);
     });
   </script>
 </body>
