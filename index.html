@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Alertes & Tâches</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>Gestion des alertes</h1>
+
+  <form id="alertForm">
+    <input type="text" id="task" placeholder="Tâche associée" required>
+    <input type="number" id="delay" placeholder="Temps (en minutes)" required>
+    <button type="submit">Créer l’alerte</button>
+  </form>
+
+  <h2>Alertes actives</h2>
+  <ul id="alertList"></ul>
+
+  <script src="script.js"></script>
+</body>
+</html>
